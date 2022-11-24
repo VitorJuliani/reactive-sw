@@ -13,7 +13,7 @@ data class PlanetResponse(
             name = planet.name,
             climate = planet.climate,
             terrain = planet.terrain,
-            filmAppearances = planet.films.size
+            filmAppearances = planet.filmAppearances.size
         )
     }
 }

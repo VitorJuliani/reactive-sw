@@ -14,6 +14,6 @@ data class PlanetDocument(
     val terrain: String
 ) {
     fun toDomain(): Planet {
-        return Planet(name = this.name, climate = this.climate, terrain = this.terrain)
+        return Planet(id = this.id, name = this.name, climate = this.climate, terrain = this.terrain)
     }
 }
