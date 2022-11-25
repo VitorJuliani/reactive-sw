@@ -1,6 +1,6 @@
 package com.example.starwars.planet.service
 
-import com.example.starwars.planet.service.`in`.PlanetUseCases
+import com.example.starwars.planet.service.`in`.PlanetService
 import com.example.starwars.planet.service.`in`.command.InsertPlanetCommand
 import com.example.starwars.planet.service.domain.Planet
 import com.example.starwars.planet.service.out.CacheClient
@@ -10,52 +10,47 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.switchIfEmptyDeferred
 
 class CachedPlanetService(
-    private val delegate: PlanetUseCases,
+    private val delegate: PlanetService,
     private val cacheClient: CacheClient
-) : PlanetUseCases {
+) : PlanetService {
 
     override fun getAllPlanets(): Flux<Planet> {
-        return cacheClient.getByKey("all")
-            .flux()
+        return cacheClient.getAllPlanets()
             .switchIfEmptyDeferred {
                 delegate.getAllPlanets()
-                    .flatMap {
-                        cacheClient.insertPlanet("all", it)
-                            .thenReturn(it)
-                    }
+                    .flatMap { insertPlanet(it).thenReturn(it) }
             }
     }
 
     override fun getPlanetsByName(name: String): Flux<Planet> {
-        return cacheClient.getByKey(name)
-            .flux()
+        return cacheClient.getPlanetsByName(name)
             .switchIfEmptyDeferred {
                 delegate.getPlanetsByName(name)
-                    .flatMap {
-                        cacheClient.insertPlanet("all", it)
-                            .thenReturn(it)
-                    }
+                    .flatMap { insertPlanet(it).thenReturn(it) }
             }
     }
 
     override fun getPlanetById(id: String): Mono<Planet> {
-        return cacheClient.getByKey(id)
+        return cacheClient.getPlanetById(id)
             .switchIfEmpty {
                 delegate.getPlanetById(id)
-                    .flatMap {
-                        cacheClient.insertPlanet("all", it)
-                            .thenReturn(it)
-                    }
+                    .flatMap { insertPlanet(it).thenReturn(it) }
             }
     }
 
+    private fun insertPlanet(planet: Planet): Mono<Boolean> {
+        return cacheClient.insertPlanet("${planet.id}-${planet.name}", planet)
+    }
+
     override fun savePlanet(command: InsertPlanetCommand): Mono<Planet> {
-        return cacheClient.removeByKey("all")
-            .flatMap { delegate.savePlanet(command) }
+        return cacheClient.removePlanets()
+            .then(Mono.just(command))
+            .flatMap(delegate::savePlanet)
     }
 
     override fun removePlanet(id: String): Mono<Unit> {
-        return cacheClient.removeByKey("all")
-            .flatMap { delegate.removePlanet(id) }
+        return cacheClient.removePlanets()
+            .then(Mono.just(id))
+            .flatMap(delegate::removePlanet)
     }
 }

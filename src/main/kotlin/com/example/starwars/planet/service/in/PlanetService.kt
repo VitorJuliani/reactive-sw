@@ -5,7 +5,7 @@ import com.example.starwars.planet.service.domain.Planet
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-interface PlanetUseCases {
+interface PlanetService {
     fun getAllPlanets(): Flux<Planet>
     fun getPlanetsByName(name: String): Flux<Planet>
     fun getPlanetById(id: String): Mono<Planet>

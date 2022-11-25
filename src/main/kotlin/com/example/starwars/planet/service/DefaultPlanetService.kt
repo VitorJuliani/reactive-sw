@@ -1,6 +1,6 @@
 package com.example.starwars.planet.service
 
-import com.example.starwars.planet.service.`in`.PlanetUseCases
+import com.example.starwars.planet.service.`in`.PlanetService
 import com.example.starwars.planet.service.`in`.command.InsertPlanetCommand
 import com.example.starwars.planet.service.domain.Planet
 import com.example.starwars.planet.service.out.*
@@ -10,10 +10,10 @@ import reactor.core.publisher.Mono
 class DefaultPlanetService(
     private val planetClient: PlanetClient,
     private val filmAppearances: PlanetAppearances
-) : PlanetUseCases {
+) : PlanetService {
 
     override fun getAllPlanets(): Flux<Planet> {
-        return planetClient.all()
+        return planetClient.getAll()
             .flatMap { planet ->
                 filmAppearances.planetAppearances(planet)
                     .map { planet.copy(filmAppearances = it) }
@@ -21,7 +21,7 @@ class DefaultPlanetService(
     }
 
     override fun getPlanetsByName(name: String): Flux<Planet> {
-        return planetClient.byName(name)
+        return planetClient.getByName(name)
             .flatMap { planet ->
                 filmAppearances.planetAppearances(planet)
                     .map { planet.copy(filmAppearances = it) }
@@ -29,7 +29,7 @@ class DefaultPlanetService(
     }
 
     override fun getPlanetById(id: String): Mono<Planet> {
-        return planetClient.byId(id)
+        return planetClient.getById(id)
             .flatMap { planet ->
                 filmAppearances.planetAppearances(planet)
                     .map { planet.copy(filmAppearances = it) }
@@ -37,7 +37,7 @@ class DefaultPlanetService(
     }
 
     override fun savePlanet(command: InsertPlanetCommand): Mono<Planet> {
-        return planetClient.fromCommand(command)
+        return planetClient.insertFromCommand(command)
     }
 
     override fun removePlanet(id: String): Mono<Unit> {

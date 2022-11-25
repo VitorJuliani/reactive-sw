@@ -16,22 +16,22 @@ class MongoPlanetClient(
     private val webClient: WebClient
 ) : PlanetClient {
 
-    override fun all(): Flux<Planet> {
+    override fun getAll(): Flux<Planet> {
         return planetRepository.findAll()
             .map(PlanetDocument::toDomain)
     }
 
-    override fun byName(name: String): Flux<Planet> {
+    override fun getByName(name: String): Flux<Planet> {
         return planetRepository.findAllByName(name)
             .map(PlanetDocument::toDomain)
     }
 
-    override fun byId(id: String): Mono<Planet> {
+    override fun getById(id: String): Mono<Planet> {
         return planetRepository.findById(id)
             .map(PlanetDocument::toDomain)
     }
 
-    override fun fromCommand(command: InsertPlanetCommand): Mono<Planet> {
+    override fun insertFromCommand(command: InsertPlanetCommand): Mono<Planet> {
         return planetRepository.save(
             PlanetDocument(name = command.name, climate = command.climate, terrain = command.terrain)
         )

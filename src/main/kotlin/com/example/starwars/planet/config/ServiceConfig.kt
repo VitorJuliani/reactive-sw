@@ -2,7 +2,7 @@ package com.example.starwars.planet.config
 
 import com.example.starwars.planet.service.CachedPlanetService
 import com.example.starwars.planet.service.DefaultPlanetService
-import com.example.starwars.planet.service.`in`.PlanetUseCases
+import com.example.starwars.planet.service.`in`.PlanetService
 import com.example.starwars.planet.service.out.*
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
@@ -15,19 +15,19 @@ class ServiceConfig {
     @Bean
     @Qualifier("cachedPlanetService")
     @Primary
-    fun planetService(
-        @Qualifier("defaultPlanetService") planetUseCases: PlanetUseCases,
+    fun cachedPlanetService(
+        @Qualifier("defaultPlanetService") planetUseCases: PlanetService,
         cacheClient: CacheClient
-        ): PlanetUseCases {
+        ): PlanetService {
         return CachedPlanetService(planetUseCases, cacheClient)
     }
 
     @Bean
     @Qualifier("defaultPlanetService")
-    fun planetService(
+    fun defaultPlanetService(
         planetClient: PlanetClient,
         filmAppearances: PlanetAppearances,
-    ): PlanetUseCases {
+    ): PlanetService {
         return DefaultPlanetService(planetClient, filmAppearances)
     }
 }
