@@ -36,7 +36,7 @@ class DefaultPlanetService(
             }
     }
 
-    override fun savePlanet(command: InsertPlanetCommand): Mono<Planet> {
+    override fun insertPlanet(command: InsertPlanetCommand): Mono<Planet> {
         return planetClient.insertFromCommand(command)
     }
 

@@ -18,7 +18,7 @@ class CachedPlanetService(
         return cacheClient.getAllPlanets()
             .switchIfEmptyDeferred {
                 delegate.getAllPlanets()
-                    .flatMap { insertPlanet(it).thenReturn(it) }
+                    .flatMap { insertPlanetInCache(it).thenReturn(it) }
             }
     }
 
@@ -26,7 +26,7 @@ class CachedPlanetService(
         return cacheClient.getPlanetsByName(name)
             .switchIfEmptyDeferred {
                 delegate.getPlanetsByName(name)
-                    .flatMap { insertPlanet(it).thenReturn(it) }
+                    .flatMap { insertPlanetInCache(it).thenReturn(it) }
             }
     }
 
@@ -34,18 +34,18 @@ class CachedPlanetService(
         return cacheClient.getPlanetById(id)
             .switchIfEmpty {
                 delegate.getPlanetById(id)
-                    .flatMap { insertPlanet(it).thenReturn(it) }
+                    .flatMap { insertPlanetInCache(it).thenReturn(it) }
             }
     }
 
-    private fun insertPlanet(planet: Planet): Mono<Boolean> {
+    private fun insertPlanetInCache(planet: Planet): Mono<Boolean> {
         return cacheClient.insertPlanet("${planet.id}-${planet.name}", planet)
     }
 
-    override fun savePlanet(command: InsertPlanetCommand): Mono<Planet> {
+    override fun insertPlanet(command: InsertPlanetCommand): Mono<Planet> {
         return cacheClient.removePlanets()
             .then(Mono.just(command))
-            .flatMap(delegate::savePlanet)
+            .flatMap(delegate::insertPlanet)
     }
 
     override fun removePlanet(id: String): Mono<Unit> {

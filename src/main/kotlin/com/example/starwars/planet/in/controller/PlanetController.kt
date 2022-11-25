@@ -39,10 +39,10 @@ class PlanetController(private val planetService: PlanetService) {
     }
 
     @PostMapping
-    fun savePlanet(@RequestBody planetRequest: Mono<PlanetRequest>): Mono<ResponseEntity<Unit>> {
+    fun insertPlanet(@RequestBody planetRequest: Mono<PlanetRequest>): Mono<ResponseEntity<Unit>> {
         return planetRequest
             .map { InsertPlanetCommand(it.name, it.climate, it.terrain) }
-            .flatMap { planetService.savePlanet(it) }
+            .flatMap { planetService.insertPlanet(it) }
             .map { ResponseEntity.created(URI.create("/planets/${it.id}")).build() }
     }
 
