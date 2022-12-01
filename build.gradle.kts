@@ -26,6 +26,8 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug")
+	implementation("io.projectreactor.tools:blockhound:1.0.6.RELEASE")
 	implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
